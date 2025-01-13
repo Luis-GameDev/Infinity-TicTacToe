@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [HideInInspector] public enum Difficulty { easy, medium, hard, impossible }
+    [HideInInspector] public enum Difficulty { easy, medium, hard }
     [HideInInspector] public bool canMove = true;
 
     public Difficulty currentDifficulty = Difficulty.easy;
@@ -15,6 +15,18 @@ public class GameManager : MonoBehaviour
     private int maxMoveCount = 7; // max. amount of fields that can be set at the same time
     private int matchCount = 0; // amount of matches played
     private int winCount = 0; // amount of wins
+
+    // Check for a win (horizontal, vertical, diagonal)
+    [HideInInspector] public int[,] winPatterns = new int[,] {
+        {0, 1, 2}, // Row 1
+        {3, 4, 5}, // Row 2
+        {6, 7, 8}, // Row 3
+        {0, 3, 6}, // Column 1
+        {1, 4, 7}, // Column 2
+        {2, 5, 8}, // Column 3
+        {0, 4, 8}, // Diagonal 1
+        {2, 4, 6}  // Diagonal 2
+    };
     
     [Header("Debugging")]
     [SerializeField] private List<int> moveHistory = new List<int>(); // To store the sequence of moves (field indexes)
@@ -36,7 +48,7 @@ public class GameManager : MonoBehaviour
 
     public void ButtonClicked(int index, bool isPlayer)
     {
-        // check if fields needs to be reset
+        // check if fields need to be reset
         if(moveHistory.Count >= maxMoveCount) {
             ResetField(moveHistory[0]);
             moveHistory.RemoveAt(0);
@@ -56,6 +68,19 @@ public class GameManager : MonoBehaviour
         }
         CheckWin();
     }
+    
+    public void GiveUp() {
+        winnerText.text = "Bot won!";
+        for (int j = 0; j < fieldButtons.Length; j++)
+        {
+            ResetField(j);
+        }
+        moveHistory.Clear();
+        matchCount++;
+        matchCountText.text = "Played: " + matchCount;
+        winrateText.text = "Winrate: " + ((float)winCount / matchCount * 100) + "%";
+        return;
+    }
 
     private void ResetField(int index)
     {
@@ -65,17 +90,6 @@ public class GameManager : MonoBehaviour
     }
 
     private void CheckWin() {
-        // Check for a win (horizontal, vertical, diagonal)
-        int[,] winPatterns = new int[,] {
-            {0, 1, 2}, // Row 1
-            {3, 4, 5}, // Row 2
-            {6, 7, 8}, // Row 3
-            {0, 3, 6}, // Column 1
-            {1, 4, 7}, // Column 2
-            {2, 5, 8}, // Column 3
-            {0, 4, 8}, // Diagonal 1
-            {2, 4, 6}  // Diagonal 2
-        };
 
         for (int i = 0; i < winPatterns.GetLength(0); i++)
         {
