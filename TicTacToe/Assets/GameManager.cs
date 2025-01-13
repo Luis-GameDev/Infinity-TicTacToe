@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI winnerText;  // Text for displaying the winner
-    [SerializeField] private GameButton[] fieldButtons;  // Buttons for the fields on the game board
+    [SerializeField] public GameButton[] fieldButtons;  // Buttons for the fields on the game board
 
     [Header("References")]
     [SerializeField] private BotManager AI; // Reference to the BotManager script
@@ -46,9 +47,10 @@ public class GameManager : MonoBehaviour
             fieldButtons[index].x.enabled = true;
             canMove = false;
             moveHistory.Add(index);
-            SelectBotMove();
+            StartCoroutine(SelectBotMove());
         } else if(!isPlayer && !canMove) {
             fieldButtons[index].o.enabled = true;
+            fieldButtons[index].isSet = true;
             canMove = true;
             moveHistory.Add(index);
         }
@@ -115,10 +117,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void SelectBotMove()
-    {
-        switch (currentDifficulty)
-        {
+    public IEnumerator SelectBotMove() {
+        // Wait for 2 seconds to simulate thinking time
+        yield return new WaitForSeconds(2);
+
+        switch (currentDifficulty) {
             case Difficulty.easy:
                 ButtonClicked(AI.EasyBotMove(), false);
                 break;
@@ -128,8 +131,8 @@ public class GameManager : MonoBehaviour
             case Difficulty.hard:
                 ButtonClicked(AI.HardBotMove(), false);
                 break;
-            case Difficulty.impossible:
-                ButtonClicked(AI.ImpossibleBotMove(), false);
+            default:
+                ButtonClicked(AI.EasyBotMove(), false);
                 break;
         }
     }

@@ -17,7 +17,7 @@ public class GameButton : MonoBehaviour {
     }
 
     public void OnClick() {
-        if(!isSet) {
+        if(!isSet && gm.canMove) {
             isSet = true;
             gm.ButtonClicked(index, true);
         }

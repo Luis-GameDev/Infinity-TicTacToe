@@ -1593,6 +1593,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef23a6a888b5b034fbd7b9d5692c3f13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gm: {fileID: 1221644706}
 --- !u!1 &1248115636
 GameObject:
   m_ObjectHideFlags: 0
@@ -1873,6 +1874,7 @@ GameObject:
   - component: {fileID: 1306719665}
   - component: {fileID: 1306719664}
   - component: {fileID: 1306719663}
+  - component: {fileID: 1306719666}
   m_Layer: 5
   m_Name: Exit
   m_TagString: Untagged
@@ -1943,7 +1945,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1306719664}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1306719666}
+        m_TargetAssemblyTypeName: Exit, Assembly-CSharp
+        m_MethodName: ExitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1306719664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1982,6 +1996,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1306719661}
   m_CullTransparentMesh: 1
+--- !u!114 &1306719666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1306719661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afaf0128056405842bb13abd633a009f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1345159189
 GameObject:
   m_ObjectHideFlags: 0
