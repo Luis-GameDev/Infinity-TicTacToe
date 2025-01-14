@@ -7,8 +7,11 @@ using UnityEngine.UI;
 
 public class DifficultyButton : MonoBehaviour
 {
+    // references to the GameManager script and the button text
     [SerializeField] private GameManager gm;
     [SerializeField] private TextMeshProUGUI buttonText;
+
+    // array to store all different difficulties
     private Difficulty[] difficulties = { Difficulty.easy, Difficulty.medium, Difficulty.hard };
 
     private void Start()
@@ -16,6 +19,7 @@ public class DifficultyButton : MonoBehaviour
         UpdateButtonText();
     }
 
+    // function to switch the difficulty of the game when the button is clicked, it will cycle through the difficulties
     public void SwitchDifficulty()
     {
         int currentIndex = System.Array.IndexOf(difficulties, gm.currentDifficulty);
@@ -24,6 +28,7 @@ public class DifficultyButton : MonoBehaviour
         UpdateButtonText();
     }
 
+    // updates the text inside the button to display the current difficulty aswell as its color
     private void UpdateButtonText()
     {
         Image parentImage = buttonText.GetComponentInParent<Image>();

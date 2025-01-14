@@ -4,35 +4,49 @@ using UnityEngine;
 
 public class BotManager : MonoBehaviour
 {
+    // Reference to the GameManager script
     [SerializeField] private GameManager gm;
-    [SerializeField] private int mistakeChance = 30; // chance for the bot to make a mistake (medium difficulty)
+    
+    // Chance for the bot to make a mistake (medium difficulty)
+    [SerializeField] private int mistakeChance = 30;
 
-    // easy bot move simply picks a random available move
+    // Easy bot move simply picks a random available move
     public int EasyBotMove() {
+        // List to store available moves in (to sort between occupied fields and open ones)
         List<int> availableMoves = new();
+        
+        // Loop through all field buttons to find open fields
         for (int i = 0; i < gm.fieldButtons.Length; i++) {
             if (!gm.fieldButtons[i].isSet) {
                 availableMoves.Add(i);
             }
         }
+        
+        // pick a random index from the available moves and return it to the GameManager to set the bots move
         if (availableMoves.Count > 0) {
             int randomIndex = Random.Range(0, availableMoves.Count);
             return availableMoves[randomIndex];
         }
-        return 0; // return 0 if no available moves
+        
+        // Return 0 if no available moves (this should never be triggered since there should always be available moves)
+        return 0;
     }
     
-    // same logic as hard bot move but less smart, medium bot move has a chance to make a mistake
+    // Medium bot move has a chance to make a mistake, but will try to block the player from winning while trying to win itself
     public int MediumBotMove() {
+        // List to store available moves
         List<int> availableMoves = new();
+        
+        // Loop through all field buttons to find available moves
         for (int i = 0; i < gm.fieldButtons.Length; i++) {
             if (!gm.fieldButtons[i].isSet) {
                 availableMoves.Add(i);
             }
         }
 
-        // add a chance for the bot to make a mistake
-        if (Random.Range(0, 100) < mistakeChance) { // chance to make a mistake and pick a random move rather than thinking about it
+        // Add a chance for the bot to make a mistake
+        if (Random.Range(0, 100) < mistakeChance) {
+            // If there are available moves, pick one randomly
             if (availableMoves.Count > 0) {
                 int randomIndex = Random.Range(0, availableMoves.Count);
                 return availableMoves[randomIndex];
@@ -45,6 +59,7 @@ public class BotManager : MonoBehaviour
             int emptyCount = 0;
             int emptyIndex = -1;
 
+            // Check each win pattern
             for (int j = 0; j < gm.winPatterns.GetLength(1); j++) {
                 int index = gm.winPatterns[i, j];
                 if (gm.fieldButtons[index].isSet && gm.fieldButtons[index].x.enabled == true) {
@@ -55,6 +70,7 @@ public class BotManager : MonoBehaviour
                 }
             }
 
+            // If the player is about to win, block them
             if (playerCount == 2 && emptyCount == 1) {
                 return emptyIndex;
             }
@@ -66,6 +82,7 @@ public class BotManager : MonoBehaviour
             int emptyCount = 0;
             int emptyIndex = -1;
 
+            // Check each win pattern
             for (int j = 0; j < gm.winPatterns.GetLength(1); j++) {
                 int index = gm.winPatterns[i, j];
                 if (gm.fieldButtons[index].isSet && gm.fieldButtons[index].o.enabled == true) {
@@ -76,6 +93,7 @@ public class BotManager : MonoBehaviour
                 }
             }
 
+            // If the bot can win, complete the pattern
             if (botCount == 2 && emptyCount == 1) {
                 return emptyIndex;
             }
@@ -87,15 +105,43 @@ public class BotManager : MonoBehaviour
             return availableMoves[randomIndex];
         }
 
-        return 0; // return 0 if no available moves
+        // Return 0 if no available moves
+        return 0;
     }
 
-    // hard bot move picks the best possible move and tries to deny the player a win while trying to win itself
+    // Hard bot move picks the best possible move and tries to deny the player a win while trying to win itself
+    // this is the same as the MediumBotMove function, but the bot will always make the best move and prioritize winning over blocking the player
     public int HardBotMove() {
+        // List to store available moves
         List<int> availableMoves = new();
+        
+        // Loop through all field buttons to find available moves
         for (int i = 0; i < gm.fieldButtons.Length; i++) {
             if (!gm.fieldButtons[i].isSet) {
                 availableMoves.Add(i);
+            }
+        }
+        
+        // Try to complete a win pattern before blocking the player
+        for (int i = 0; i < gm.winPatterns.GetLength(0); i++) {
+            int botCount = 0;
+            int emptyCount = 0;
+            int emptyIndex = -1;
+
+            // Check each win pattern
+            for (int j = 0; j < gm.winPatterns.GetLength(1); j++) {
+                int index = gm.winPatterns[i, j];
+                if (gm.fieldButtons[index].isSet && gm.fieldButtons[index].o.enabled == true) {
+                    botCount++;
+                } else if (!gm.fieldButtons[index].isSet) {
+                    emptyCount++;
+                    emptyIndex = index;
+                }
+            }
+
+            // If the bot can win, complete the pattern
+            if (botCount == 2 && emptyCount == 1) {
+                return emptyIndex;
             }
         }
 
@@ -105,6 +151,7 @@ public class BotManager : MonoBehaviour
             int emptyCount = 0;
             int emptyIndex = -1;
 
+            // Check each win pattern
             for (int j = 0; j < gm.winPatterns.GetLength(1); j++) {
                 int index = gm.winPatterns[i, j];
                 if (gm.fieldButtons[index].isSet && gm.fieldButtons[index].x.enabled == true) {
@@ -115,28 +162,8 @@ public class BotManager : MonoBehaviour
                 }
             }
 
+            // If the player is about to win, block them
             if (playerCount == 2 && emptyCount == 1) {
-                return emptyIndex;
-            }
-        }
-
-        // Try to complete a win pattern
-        for (int i = 0; i < gm.winPatterns.GetLength(0); i++) {
-            int botCount = 0;
-            int emptyCount = 0;
-            int emptyIndex = -1;
-
-            for (int j = 0; j < gm.winPatterns.GetLength(1); j++) {
-                int index = gm.winPatterns[i, j];
-                if (gm.fieldButtons[index].isSet && gm.fieldButtons[index].o.enabled == true) {
-                    botCount++;
-                } else if (!gm.fieldButtons[index].isSet) {
-                    emptyCount++;
-                    emptyIndex = index;
-                }
-            }
-
-            if (botCount == 2 && emptyCount == 1) {
                 return emptyIndex;
             }
         }
@@ -147,8 +174,7 @@ public class BotManager : MonoBehaviour
             return availableMoves[randomIndex];
         }
 
-        return 0; // return 0 if no available moves
+        // Return 0 if no available moves
+        return 0;
     }
-
-    
 }
