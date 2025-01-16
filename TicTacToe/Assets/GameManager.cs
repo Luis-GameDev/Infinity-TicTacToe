@@ -144,7 +144,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public IEnumerator WinAnimation(bool playerWon = true) {
+    public IEnumerator WinAnimation(bool playerWon) {
         if(playerWon) winParticles.SetActive(true);
         yield return new WaitForSeconds(2);
         winParticles.SetActive(false);
